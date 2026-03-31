@@ -8,6 +8,11 @@ GOAL = 4
 BOXPLUSGOAL = 5
 KEEPERPLUSGOAL = 6
 
+UP = (-1, 0)
+DOWN = (1, 0)
+LEFT = (0, -1)
+RIGHT = (0, 1)
+
 hashmap ={
     BLANK: ' ',
     WALL: '#',
@@ -18,13 +23,6 @@ hashmap ={
     KEEPERPLUSGOAL: '+'
 }
 
-def goal_test(board):
-        coordinates = board.goals
-        for coord in coordinates:
-            row, col = coord
-            if board.board[row][col] != BOXPLUSGOAL:
-                return False
-        return True
 
 class Rules:
     ### Board Checks ###
@@ -57,35 +55,18 @@ class Rules:
     def iskeeperplusgoal(board, row, col):
         return board[row][col] == KEEPERPLUSGOAL
     
-    ### Player Rules ###
-    def __distance(curr_pos, next_pos):
-        x1,y1 = curr_pos
-        x2,y2 = next_pos
-        return (sqrt((x2 - x1)**2 + (y2-y1)**2) < 2)
-    
-    def canwalk(self, curr_pos, next_pos):
-        distance = self.__distance(curr_pos, next_pos)
-        return (curr_pos == KEEPER and next_pos == BLANK and distance)
-    
-    def canpush(self, curr_pos, next_pos):
-        distance = self.__distance(curr_pos, next_pos)
-        return (curr_pos == KEEPER and next_pos == BOX and distance)
-    
-    
-    
-            
-    
-    
+        
 
 class Board(Rules):
     def __init__(self, rows = 6, cols = 9):
         self.rows = rows
         self.cols = cols
-        self.board =self.__emptyBoard()
+        self.board =self.__fillBoard()
         self.goals = self.__goal_coordinates()
+        self.keeper = self.__keeper_coordinates()
     
-    def __emptyBoard(self):
-        ### Inititalize a board with all BLANK values ###
+    def __fillBoard(self):
+        ### Inititalize a board with preset values ###
         rboard = [
             [BLANK, BLANK, WALL, WALL, WALL, WALL, BLANK, BLANK, BLANK],
             [WALL, WALL, WALL, BLANK, BLANK, WALL, WALL, WALL, WALL],
@@ -95,6 +76,21 @@ class Board(Rules):
             [WALL] * 9
         ]
         return rboard
+    
+    ### update keeper coordinates ###
+    def update(self, direction):
+        row, col = self.keeper
+        row += direction[0]
+        col += direction[1]
+        self.keeper = (row, col)
+
+    ### Starting the game will always provide keeper position ###
+    def __keeper_coordinates(self):
+        for i in range(self.rows):
+            for j in range(self.cols):
+                if self.board[i][j] == KEEPER:
+                    return (i,j)
+
     def __goal_coordinates(self):
         coordinates = list()
         for i in range(self.rows):
