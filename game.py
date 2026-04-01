@@ -65,6 +65,18 @@ class Board(Rules):
         self.goals = self.__goal_coordinates()
         self.keeper = self.__keeper_coordinates()
     
+    ### Make the board iterable ###
+    def __iter__(self):
+        for i in range(self.rows):
+            yield self.board[i]
+    
+    ### Board equality ###
+    def __eq__(self, other):
+        ### Checks if other is actually a board ###
+        if not isinstance(other, Board):
+            return False
+        return self.board == other.board and self.keeper == other.keeper
+
     def __fillBoard(self):
         ### Inititalize a board with preset values ###
         rboard = [
@@ -78,8 +90,10 @@ class Board(Rules):
         return rboard
     
     ### update keeper coordinates ###
+    ### Remove the old keeper coordinates ###
     def update(self, direction):
         row, col = self.keeper
+        self.board[row][col] = BLANK
         row += direction[0]
         col += direction[1]
         self.keeper = (row, col)
@@ -88,7 +102,7 @@ class Board(Rules):
     def __keeper_coordinates(self):
         for i in range(self.rows):
             for j in range(self.cols):
-                if self.board[i][j] == KEEPER:
+                if self.board[i][j] == KEEPER or self.board[i][j] == KEEPERPLUSGOAL:
                     return (i,j)
 
     def __goal_coordinates(self):

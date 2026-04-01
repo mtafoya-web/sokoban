@@ -112,3 +112,25 @@ def astar(start_state, goal_p, successors, cost_fn, remaining_cost_fn):
                 open_list.add(MyPath(state2, my_path, cost, total_cost), total_cost)
 
 # The rest of the code for testing and other purposes would go here
+from driver import *
+def main():
+    state = Board()
+
+    result = astar(
+        state, 
+        goal_test, 
+        next_states, 
+        cost_fn, 
+        h0,
+        )
+    
+    if result is None:
+        print("No solution found")
+    for i, s in enumerate(result):
+        print(f"step {i}: ")
+        s.printBoard()
+        print()
+
+
+if __name__ == "__main__":
+    main()
