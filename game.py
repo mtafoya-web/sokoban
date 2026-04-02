@@ -97,6 +97,16 @@ class Board(Rules):
         row += direction[0]
         col += direction[1]
         self.keeper = (row, col)
+    
+    def find_box(self):
+        coordinates = []
+        for i in range(self.rows):
+            for j in range(self.cols):
+                if self.board[i][j] == BOX:
+                    coordinates.append((i,j))
+        return coordinates
+
+        
 
     ### Starting the game will always provide keeper position ###
     def __keeper_coordinates(self):

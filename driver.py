@@ -79,6 +79,23 @@ def move_box(state, position, direction):
         return set_square(state, new_row, new_col, BOX)
 ### EOF function to move box ###
 
+
+### Hueristic backtracking helper ###
+def match(distances, boxes, box_index, used_goals):
+    ### Base Case ###
+    if box_index == len(boxes):
+        return 0
+    
+    best = float('inf')
+    box = boxes[box_index]
+
+    ### try all goals ###
+    for goal_index in range(len(distances[box])):
+        if goal_index not in used_goals:
+            cost = distances[box][goal_index]
+            total = cost + match(distances, boxes, box_index + 1, used_goals | {goal_index})
+            best = min(best, total)
+    return best
      
 ################ End of Helper Functions ######################################
 ################ START of calibrator Functions ######################################
@@ -105,6 +122,30 @@ def next_states(state):
 def h0(state):
      return 0
 
+### new Admissibe Heuristic ###
+"""
+Manhattan distance: Find the closest box distance to each goal
+                    Number of grid steps ignoring obstacles 
+"""
+def h403967197(state):
+    ### Find boxes biult in function in class ###
+    boxes = list()
+    boxes = state.find_box()
+    goals = state.goals
+    ### Find the goal
+    ### Find the distance between boxes and goals ###
+    distances = {}
+    for box in boxes:
+        box_row, box_col = box
+        distances[box] = list()
+        for goal in goals:
+            goal_row, goal_col = goal 
+            distance = abs(box_row - goal_row) + abs(box_col - goal_col)
+            distances[box].append(distance)
+        
+    return match(distances, boxes, 0, set())
+
+
 ### Heurisitc function: returns number of boxes not in goal positions###
 """
 This hueristic is admissible because each box not on a goal
@@ -124,15 +165,13 @@ def cost_fn(state1, state2):
     return 1
 
 """Test"""
-#def main():
-#    state = Board()
-#    state.printBoard()
-#    moves = [RIGHT, UP, UP, LEFT, LEFT, LEFT, UP, LEFT, DOWN, DOWN, RIGHT, DOWN, LEFT, LEFT, RIGHT]
-#    for move in moves:
-#        try_move(state, move)
-#        state.printBoard()
+def main():
+    state = Board()
+    state.printBoard()
+    print(h403967197(state))
+    
     
 
 
-#if __name__ == "__main__":
-#    main()
+if __name__ == "__main__":
+    main()

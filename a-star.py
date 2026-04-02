@@ -115,13 +115,14 @@ def astar(start_state, goal_p, successors, cost_fn, remaining_cost_fn):
 from driver import *
 def main():
     state = Board()
+    heuristic = h403967197
 
     result = astar(
         state, 
         goal_test, 
         next_states, 
         cost_fn, 
-        h0,
+        heuristic,
         )
     
     if result is None:
@@ -130,6 +131,7 @@ def main():
         print(f"step {i}: ")
         s.printBoard()
         print()
+    print(f"{heuristic} expanded:", expanded, "generated:", generated, "solution length:", len(result) - 1)
 
 
 if __name__ == "__main__":
